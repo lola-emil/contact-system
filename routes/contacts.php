@@ -27,4 +27,6 @@ Route::group([
     Route::post("/ignore-shared-contact", [ContactController::class, "ingoreSharedContact"]);
     Route::post("/share-multiple-contacts", [ContactController::class, "shareMultiple"]);
     Route::post("/delete-multiple-contacts", [ContactController::class, "deleteMultiple"]);
+
+    Route::post("/send-private-message", [ContactController::class, "sendPrivateMessage"]);
 });

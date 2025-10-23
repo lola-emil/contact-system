@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\ContactShared;
 use App\Events\Kuan;
 use App\Events\ShareContactEvent;
 use App\Http\Services\ContactService;
@@ -10,6 +11,8 @@ use App\Models\SharedContact;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
+use App\Events\PrivateMessageSent;
+
 
 class ContactController extends Controller
 {
@@ -137,7 +140,6 @@ class ContactController extends Controller
             "permission" => ["required"]
         ]);
 
-
         $result = $this->contactService->shareContact($validated);
 
         if ($result["error"])
@@ -195,10 +197,13 @@ class ContactController extends Controller
 
     public function shareMultiple(Request $request)
     {
+        $user = Auth::user();
         $input = json_decode($request->getContent(), true);
 
         $result = $this->contactService->shareMultiple($input);
-
+        
+        foreach($result["userIds"] as $receiverIds) 
+            event(new ContactShared($user, $receiverIds));
 
         return response()->json([
             "message" => "Success",

@@ -9,7 +9,7 @@
                     @on-ignore="onIgnoreContact" />
                 <div>
                     <Link aria-label="profile" class="btn btn-ghost btn-square" href="/users/profile">
-                    <User />
+                    <UserIcon />
                     </Link>
                 </div>
 
@@ -24,15 +24,16 @@
 
 <script setup lang="ts">
 import { acceptSharedContactStatus, getUnconfirmedShares, ignoreSharedContact } from '@/services/contact.service';
-import { SharedContact } from '@/types';
+import { SharedContact, User } from '@/types';
 import { onMounted, ref } from 'vue';
 import { Link } from '@inertiajs/vue3';
-import { User } from "lucide-vue-next";
+import { User as UserIcon } from "lucide-vue-next";
 import { usePage } from '@inertiajs/vue3';
 
 import Notification from './Notification.vue';
-import { useSocket } from '@/composables/useSocket';
 import { useWebNotification } from '@vueuse/core';
+
+import { useEcho } from '@laravel/echo-vue';
 
 const { isSupported, permissionGranted, show } = useWebNotification({
     title: "Notification",
@@ -44,7 +45,13 @@ const { isSupported, permissionGranted, show } = useWebNotification({
 
 const page = usePage();
 
-const { connectToSocket, getSocket } = useSocket(page.props.auth.user.id);
+
+const contactSharedEvent = useEcho(`share.contact.${page.props.auth.user.id}`, "ContactShared", (payload: {sharer: User}) => {
+    // const sender = payload.sharer;
+    fetchNotif();
+    showWebNotification();
+})
+
 
 const unconfirmedContacts = ref<SharedContact[]>([]);
 
@@ -76,18 +83,7 @@ function showWebNotification() {
 
 onMounted(() => {
     fetchNotif();
-
-    // connect to socket
-    connectToSocket();
-
-    const socket = getSocket();
-    
-    socket.on("refresh-notif", sender => {
-        console.log("sender", sender);
-        
-        fetchNotif();
-        showWebNotification();
-    });
+    contactSharedEvent.listen();
 });
 
 const emit = defineEmits<{

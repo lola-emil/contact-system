@@ -1,6 +1,8 @@
 <template>
     <div class="dropdown dropdown-end">
-        <div tabindex="0" role="button" aria-label="Notification" class="btn btn-square m-1 btn-ghost btn-sm">
+        <div class="indicator">
+            <div v-if="props.items.length > 0" class="indicator-item badge badge-secondary">{{ props.items.length }}</div>
+                    <div tabindex="0" role="button" aria-label="Notification" class="btn btn-square m-1 btn-ghost btn-sm">
             <span>
                 <svg width="24" height="24" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path
@@ -8,9 +10,7 @@
                         fill="#ffffff" />
                 </svg>
             </span>
-
-            <div v-if="props.items.length > 0" class="badge badge-sm badge-secondary">{{ props.items.length }} </div>
-
+        </div>
         </div>
 
         <ul class="list dropdown-content w-sm lg:w-lg bg-base-200 rounded-box shadow-md">

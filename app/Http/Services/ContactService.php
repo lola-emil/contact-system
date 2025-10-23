@@ -150,7 +150,7 @@ class ContactService
 
         return [
             "error" => null,
-            "result" => $sharedContact
+            "data" => $sharedContact
         ];
     }
 

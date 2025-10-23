@@ -105,15 +105,17 @@ import SearchContact from '@/components/SearchContact.vue';
 import Toast from '@/components/Toast.vue';
 import { getEmails } from '@/services/user.service';
 import { useContacts } from '@/composables/useContacts';
-import { useSocket } from '@/composables/useSocket';
+// import { useSocket } from '@/composables/useSocket';
+import { useEcho } from '@laravel/echo-vue';
 
 import {
     range,
     appendQueryParam
 } from '@/lib/utils';
+import axios from 'axios';
 
 const page = usePage();
-const { connectToSocket, getSocket } = useSocket(page.props.auth.user.id);
+// const { connectToSocket, getSocket } = useSocket(page.props.auth.user.id);
 
 const selectedContacts = ref<number[]>([]);
 const userName = ref<string | undefined>();
@@ -145,11 +147,10 @@ const highlightSearchResults = () =>
 
 
 
+console.log(`chat.${page.props.auth.user.id}`)
 onMounted(() => {
     const props = page.props;
     const user = props.auth.user;
-
-    connectToSocket();
 
     userName.value = `${user.firstname} ${user.lastname}`;
 
@@ -223,19 +224,19 @@ const showDeleteConfirmation = (contactId: number) => {
 }
 
 const onShareSuccess = (response: MultiShareContactResponse) => {
-    const socket = getSocket();
-    
+    // const socket = getSocket();
+
     console.log(page.props.auth.user);
-    
-    socket.emit("contact-sent", response.userIds, page.props.auth.user);
+
+    // socket.emit("contact-sent", response.userIds, page.props.auth.user);
 
     toast.value?.showToast('Shared successfully.', 'success');
 }
 
 function onShareMultiSuccess(response: MultiShareContactResponse) {
-    const socket = getSocket();
+    // const socket = getSocket();
     console.log(page.props.auth.user);
-    socket.emit("contact-sent", response.userIds, page.props.auth.user);
+    // socket.emit("contact-sent", response.userIds, page.props.auth.user);
 
     toast.value?.showToast(`
         <span class="font-bold">Shared</span>: ${response.shared.length}; <span class="font-bold">Skipped:</span> ${response.skipped.length}`)
