@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class SharedContact extends Model
 {
+    public $timestamps = false;
     public $primaryKey = null;
     public $incrementing = false;  // We do not use auto-incrementing IDs
     protected $fillable = [
