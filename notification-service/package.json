@@ -1,0 +1,22 @@
+{
+  "name": "notification-service",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "author": "Rens Saladaga <https://github.com/lola-emil>",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "build": "tsc -p .",
+    "dev": "concurrently \"yarn run build -w\" \"nodemon .\""
+  },
+  "devDependencies": {
+    "@types/node": "^24.7.0",
+    "concurrently": "^9.2.1",
+    "nodemon": "^3.1.10",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "socket.io": "^4.8.1"
+  }
+}
