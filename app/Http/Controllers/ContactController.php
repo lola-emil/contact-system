@@ -3,22 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Events\ContactShared;
-use App\Events\Kuan;
-use App\Events\ShareContactEvent;
 use App\Http\Services\ContactService;
+use App\Http\Services\NotificationService;
 use App\Models\Contact;
 use App\Models\SharedContact;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
-use App\Events\PrivateMessageSent;
 
 
 class ContactController extends Controller
 {
 
     public function __construct(
-        protected ContactService $contactService
+        protected ContactService $contactService,
+        protected NotificationService $notificationService
     ) {}
 
     private $contactValidateRules = [
@@ -201,7 +200,17 @@ class ContactController extends Controller
         $input = json_decode($request->getContent(), true);
 
         $result = $this->contactService->shareMultiple($input);
-        
+
+        // CREATE NEW NOTIFICATION FOR EACH SHARED CONTACTS
+        foreach($result["shared"] as $shared) {
+            $this->notificationService->addNewSharedContactNotification(
+                Auth::id(), // sender
+                $shared["user_id"], // receiver
+                $shared["contact_id"] // contact to be received
+            );
+        }
+
+        // NOTIFIY EACH RECEIVER
         foreach($result["userIds"] as $receiverIds) 
             event(new ContactShared($user, $receiverIds));
 

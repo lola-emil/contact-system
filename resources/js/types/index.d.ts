@@ -50,8 +50,18 @@ export interface Contact {
     permission: "viewer" | "editor",
 
     created_at?: string;
-
+    owner: User
 }
+
+export interface Notifications {
+    id: number;
+    title: string;
+    message: string;
+    user_id: number;
+
+    created_at?: string;
+    updated_at?: string;
+};
 
 export interface ContactTableFormat {
     id: number;
@@ -75,8 +85,10 @@ export interface SharedContact {
     shared_at: string;
     created_at: string;
     updated_at: string;
-    contact_name: string;
-    owner: string;
+    // contact_name: string;
+    // owner: string;
+
+    contact: Contact,
 }
 
 
@@ -86,6 +98,7 @@ interface PaginatedContact {
     pageNumber: number;
     pageCount: number;
     contactCount: number;
+
 };
 
 

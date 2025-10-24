@@ -11,7 +11,6 @@ class Contact extends Model
 {
     use SoftDeletes;
 
-
     protected $fillable = [
         'firstname',
         'lastname',
@@ -20,6 +19,10 @@ class Contact extends Model
         "phone_number",
         "user_id"
     ];
+
+    public function owner() {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 
     public static function getContacts(int $limit, string $searchTerm = "")
     {

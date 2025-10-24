@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
 
@@ -19,22 +18,26 @@ class SharedContact extends Model
     ];
 
 
+    public function  contact() {
+        return $this->belongsTo(Contact::class);
+    }
+
+    public function user() {
+        return $this->belongsTo(User::class);
+    }
+
+
     public static function getUnconfirmedSharedContacts()
     {
         $userId = Auth::id();
 
-        $sharedContacts = DB::table('shared_contacts')
-            ->select(
-                'shared_contacts.*',
-                DB::raw("CONCAT(contacts.firstname, ' ', contacts.lastname) AS contact_name"),
-                DB::raw("CONCAT(users.firstname, ' ', users.lastname) AS owner")
-            )
-            ->join('contacts', 'contacts.id', '=', 'shared_contacts.contact_id')
-            ->join('users', 'contacts.user_id', '=', 'users.id')
-            ->where('shared_contacts.user_id', $userId)
-            ->where('shared_contacts.confirmed', 0)
-            ->whereNull('contacts.deleted_at')
-            ->get();
+        $sharedContacts = SharedContact::with([
+            "contact.owner"
+        ])
+        ->where("user_id", $userId)
+        ->where("confirmed", 0)
+        ->whereHas("contact", fn($q) => $q->whereNull("deleted_at"))
+        ->get();
 
         return $sharedContacts;
     }

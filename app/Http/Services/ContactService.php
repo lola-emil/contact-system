@@ -163,7 +163,7 @@ class ContactService
         $skipped = [];
 
         $userIds = User::whereIn("email", $emails)->pluck("id");
-        $contacts = Contact::getSelectedContacts($contactIds);  
+        $contacts = Contact::getSelectedContacts($contactIds);
 
         $newSharedContacts = [];
 
@@ -187,11 +187,12 @@ class ContactService
                     continue;
                 }
 
-                $sharedContact = SharedContact::join("contacts", "contacts.id", "=", "shared_contacts.contact_id")
-                    ->where("shared_contacts.user_id", $userId)
-                    ->where("shared_contacts.contact_id", $contact->id)
+                $sharedContact = SharedContact::with([
+                    "contact.owner"
+                ])
+                    ->where("user_id", $userId)
+                    ->where("contact_id", $contact["id"])
                     ->first();
-
 
                 // Prevent duplicate
                 if ($sharedContact) {

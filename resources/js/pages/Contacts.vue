@@ -112,7 +112,6 @@ import {
     range,
     appendQueryParam
 } from '@/lib/utils';
-import axios from 'axios';
 
 const page = usePage();
 // const { connectToSocket, getSocket } = useSocket(page.props.auth.user.id);
@@ -142,12 +141,8 @@ const highlightSearchResults = () =>
         owner_id: val.owner_id,
         owner_name: val.owner_name,
         permission: val.permission,
-    })
-    );
+    }));
 
-
-
-console.log(`chat.${page.props.auth.user.id}`)
 onMounted(() => {
     const props = page.props;
     const user = props.auth.user;
