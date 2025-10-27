@@ -7,6 +7,10 @@
             <div class="flex items-center gap-3">
                 <Notification :items="unconfirmedContacts" @on-accept="onAcceptSharedContact"
                     @on-ignore="onIgnoreContact" />
+
+                <!-- <button class="btn btn-ghost btn-square" @click="showNotificationModal()">
+                    <Bell :size="20" />
+                </button> -->
                 <div>
                     <Link aria-label="profile" class="btn btn-ghost btn-square" href="/users/profile">
                     <UserIcon />
@@ -20,20 +24,22 @@
             </div>
         </div>
     </header>
+
+    <NotificationModal :items="notifications" ref="notifModal" />
 </template>
 
 <script setup lang="ts">
 import { acceptSharedContactStatus, getUnconfirmedShares, ignoreSharedContact } from '@/services/contact.service';
-import { SharedContact, User } from '@/types';
+import { Notifications, SharedContact, User } from '@/types';
 import { onMounted, ref } from 'vue';
 import { Link } from '@inertiajs/vue3';
 import { User as UserIcon } from "lucide-vue-next";
 import { usePage } from '@inertiajs/vue3';
-
-import Notification from './Notification.vue';
 import { useWebNotification } from '@vueuse/core';
-
 import { useEcho } from '@laravel/echo-vue';
+import NotificationModal from './NotificationModal.vue';
+import Notification from './Notification.vue';
+
 
 const { isSupported, permissionGranted, show } = useWebNotification({
     title: "Notification",
@@ -46,18 +52,23 @@ const { isSupported, permissionGranted, show } = useWebNotification({
 const page = usePage();
 
 
-const contactSharedEvent = useEcho(`share.contact.${page.props.auth.user.id}`, "ContactShared", (payload: {sharer: User}) => {
+const contactSharedEvent = useEcho(`share.contact.${page.props.auth.user.id}`, "ContactShared", (payload: { sharer: User }) => {
     // const sender = payload.sharer;
     fetchNotif();
     showWebNotification();
 })
 
+const notifModal = ref<InstanceType<typeof NotificationModal>>();
+const notifications = ref<Notifications[]>([]);
 
 const unconfirmedContacts = ref<SharedContact[]>([]);
 
 async function fetchNotif() {
     const data = await getUnconfirmedShares()
     unconfirmedContacts.value = data;
+    // const userId = page.props.auth.user.id;
+    // const data = await NotifService.getUserNotification(userId);
+    // notifications.value = data;
 }
 
 function onAcceptSharedContact(contactId: number) {
@@ -81,13 +92,22 @@ function showWebNotification() {
         show()
 }
 
+
+function showNotificationModal() {
+    notifModal.value?.showModal();
+}
+
 onMounted(() => {
     fetchNotif();
     contactSharedEvent.listen();
+
+    const userId = page.props.auth.user.id;
+
 });
 
 const emit = defineEmits<{
     stateChange: []
 }>();
+
 
 </script>

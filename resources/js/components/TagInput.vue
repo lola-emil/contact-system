@@ -8,7 +8,7 @@
                 </div>
             </span>
             <input ref="input-itself" type="text" @focus="isOpen = true" v-model="textInput" @keydown="onKeydown"
-                @keydown.backspace="handleBackspace" class="flex-grow p-1 text-sm outline-none"
+                @keydown.backspace="handleBackspace" class="grow p-1 text-sm outline-none"
                 placeholder="Type and press Enter...">
         </label>
 

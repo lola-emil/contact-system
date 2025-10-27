@@ -211,8 +211,8 @@ class ContactController extends Controller
         }
 
         // NOTIFIY EACH RECEIVER
-        foreach($result["userIds"] as $receiverIds) 
-            event(new ContactShared($user, $receiverIds));
+        foreach($result["users"] as $receiver) 
+            event(new ContactShared($user, $receiver->id));
 
         return response()->json([
             "message" => "Success",

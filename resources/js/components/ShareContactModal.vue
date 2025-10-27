@@ -35,6 +35,25 @@
 
                 <button class="btn btn-secondary">Share</button>
             </form>
+
+            <div class="mt-5">
+                <div v-if="shared.length > 0" role="alert" class="alert alert-success alert-soft flex flex-col">
+                    <div class="w-full">
+                        <span class="font-bold">Successfully shared contacts: {{ shared.length }}</span>
+                    </div>
+                </div>
+                <br>
+                <div v-if="skipped.length > 0" role="alert" class="alert alert-warning alert-soft flex flex-col">
+                    <div class="w-full">
+                        <span class="font-bold">Skipped contacts</span>
+                    </div>
+                    <div class="w-full">
+                        <ul class="">
+                            <li v-for="value in skipped">- {{ value.contact }} - {{ value.reason }}</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
         </div>
     </dialog>
 </template>
@@ -42,9 +61,10 @@
 <script setup lang="ts">
 import { ref, useTemplateRef, reactive, onMounted, onBeforeUnmount } from 'vue';
 import { getContactById, shareMultipleContacts } from '@/services/contact.service';
-import { Contact, MultiShareContactResponse } from '@/types';
+import { Contact, MultiShareContactResponse, SharedContact, Skipped } from '@/types';
 
 import TagInput from './TagInput.vue';
+import { usePage } from '@inertiajs/vue3';
 
 const modal = useTemplateRef("share-contact-modal");
 // const emailInput = useTemplateRef("email-input");
@@ -61,6 +81,8 @@ const selectedContact = ref<Partial<Contact>>({})
 const recepients = ref<string[]>([]);
 const errorMessage = ref<string | undefined>();
 
+const shared = ref<SharedContact[]>([]);
+const skipped = ref<Skipped[]>([]);
 
 function showModal(contactId: number) {
     modal.value?.showModal();
@@ -78,6 +100,9 @@ function onClose() {
     errorMessage.value = "";
 
     tagInput.value?.clearTags();
+
+    skipped.value = [];
+    shared.value = [];
 }
 
 function fetchContact(contactId: number) {
@@ -91,9 +116,12 @@ function fetchContact(contactId: number) {
 
 function submit() {
     shareMultipleContacts([selectedContact.value.id!], form.emails ?? [], form.permission)
-        .then(repsonse => {
-            emit("onSuccess", repsonse);
-            modal.value?.close();
+        .then(response => {
+            // emit("onSuccess", response);
+            // modal.value?.close();
+            skipped.value = response.skipped;
+            shared.value = response.shared;
+
         }).catch(err => {
             const error = err.response.data.error;
             errorMessage.value = error;
@@ -116,6 +144,7 @@ function handleKeydown(evt: KeyboardEvent) {
 
 onMounted(() => {
     window.addEventListener("keydown", handleKeydown);
+
 });
 
 onBeforeUnmount(() => {

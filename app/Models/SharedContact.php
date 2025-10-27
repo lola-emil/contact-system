@@ -18,7 +18,7 @@ class SharedContact extends Model
     ];
 
 
-    public function  contact() {
+    public function contact() {
         return $this->belongsTo(Contact::class);
     }
 

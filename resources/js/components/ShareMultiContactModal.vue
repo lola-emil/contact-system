@@ -34,6 +34,24 @@
 
                 <button class="btn btn-secondary">Share</button>
             </form>
+            <div class="mt-5">
+                <div v-if="shared.length > 0" role="alert" class="alert alert-success alert-soft flex flex-col">
+                    <div class="w-full">
+                        <span class="font-bold">Successfully shared contacts: {{ shared.length }}</span>
+                    </div>
+                </div>
+                <br>
+                <div v-if="skipped.length > 0" role="alert" class="alert alert-warning alert-soft flex flex-col">
+                    <div class="w-full">
+                        <span class="font-bold">Skipped contacts</span>
+                    </div>
+                    <div class="w-full">
+                        <ul class="">
+                            <li v-for="value in skipped">- {{ value.contact }} - {{ value.reason }}</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
         </div>
     </dialog>
 </template>
@@ -43,11 +61,15 @@
 import { ref, useTemplateRef, reactive, onMounted, onBeforeUnmount } from 'vue';
 import TagInput from './TagInput.vue';
 import { shareMultipleContacts } from '@/services/contact.service';
-import { MultiShareContactResponse } from '@/types';
+import { MultiShareContactResponse, SharedContact, Skipped } from '@/types';
 
 const modal = useTemplateRef("share-contact-modal");
 const contactIds = ref<number[]>([]);
 const tagInput = ref<InstanceType<typeof TagInput> | null>();
+
+
+const shared = ref<SharedContact[]>([]);
+const skipped = ref<Skipped[]>([]);
 
 const form = reactive<Partial<{
     emails: string[],
@@ -83,7 +105,9 @@ function onClose() {
 
 async function submit() {
     const response = await shareMultipleContacts(contactIds.value, form.emails ?? [], form.permission)
-    emit("onSuccess", response);
+    // emit("onSuccess", response);
+    shared.value = response.shared;
+    skipped.value = response.skipped;
 }
 
 function handleKeydown(evt: KeyboardEvent) {

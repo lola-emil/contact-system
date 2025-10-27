@@ -112,7 +112,7 @@ export interface ContactError {
 
 
 export interface Skipped {
-    contact: Contact;
+    contact: string;
     reason: string;
 };
 

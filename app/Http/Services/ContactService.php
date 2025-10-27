@@ -162,7 +162,7 @@ class ContactService
         $permission = $input["permission"] ?? "viewer";
         $skipped = [];
 
-        $userIds = User::whereIn("email", $emails)->pluck("id");
+        $users = User::whereIn("email", $emails)->select(["id", "email"])->get();
         $contacts = Contact::getSelectedContacts($contactIds);
 
         $newSharedContacts = [];
@@ -177,9 +177,9 @@ class ContactService
                 continue;
             }
 
-            foreach ($userIds as $userId) {
+            foreach ($users as $user) {
                 // Prevent share to self
-                if ($userId === Auth::id()) {
+                if ($user->id === Auth::id()) {
                     array_push($skipped, [
                         "contact" => $contact->email,
                         "reason" => "Nag-share sa kaugalingon."
@@ -190,34 +190,36 @@ class ContactService
                 $sharedContact = SharedContact::with([
                     "contact.owner"
                 ])
-                    ->where("user_id", $userId)
+                    ->where("user_id", $user->id)
                     ->where("contact_id", $contact["id"])
                     ->first();
 
                 // Prevent duplicate
                 if ($sharedContact) {
                     array_push($skipped, [
-                        "contact" => $sharedContact->email,
-                        "reason" => "already shared."
+                        "contact" => $contact->email,
+                        "reason" => "already shared to {$user->email}."
                     ]);
+
+                    // dd($sharedContact);
                     continue;
                 }
 
 
                 array_push($newSharedContacts, [
-                    "user_id" => $userId,
+                    "user_id" => $user->id,
                     "contact_id" => $contact->id,
                     "permission" => $permission
                 ]);
             }
         }
 
-        SharedContact::insert($newSharedContacts);
+        $result = SharedContact::insert($newSharedContacts);
 
         return [
             "skipped" => $skipped,
             "shared" => $newSharedContacts,
-            "userIds" => $userIds,
+            "users" => $users,
         ];
     }
 
