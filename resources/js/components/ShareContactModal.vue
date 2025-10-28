@@ -64,7 +64,6 @@ import { getContactById, shareMultipleContacts } from '@/services/contact.servic
 import { Contact, MultiShareContactResponse, SharedContact, Skipped } from '@/types';
 
 import TagInput from './TagInput.vue';
-import { usePage } from '@inertiajs/vue3';
 
 const modal = useTemplateRef("share-contact-modal");
 // const emailInput = useTemplateRef("email-input");

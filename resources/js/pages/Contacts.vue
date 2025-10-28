@@ -205,12 +205,12 @@ const showMultiDeleteConfirmation = () =>
     multiDeleteConfirmation.value?.showConfirmationModal("Are you sure you want to delete these contacts?");
 
 const showContactForm = () => contactFormModal.value?.showModal({
-    modalTitle: "Create New Contact"
+    title: "Create New Contact"
 });
 
 const showEditContactForm = (contactId: number) => contactFormModal.value?.showModal({
     id: contactId,
-    modalTitle: "Update Contact"
+    title: "Update Contact"
 });
 
 const showDeleteConfirmation = (contactId: number) => {
