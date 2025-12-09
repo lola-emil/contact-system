@@ -1,6 +1,4 @@
-Absolutely! Below is the **Markdown** version of the text you've provided:
 
-````markdown
 # Contact System - Proweaver Practice Project
 
 ## Repo Link
@@ -60,7 +58,7 @@ The following software should be installed on your machine:
 1. **Clone the Repo:**
    ```bash
    git clone https://github.com/lola-emil/contact-system
-````
+   ```
 
 2. **Navigate to the Project Directory:**
 
@@ -101,5 +99,3 @@ The following software should be installed on your machine:
 ---
 
 After completing these steps, the **Contact System** should be up and running on your local development environment. You can now open the application in your browser at `http://localhost:8000` and begin using the contact management features.
-
-``
