@@ -214,7 +214,7 @@ class ContactService
             }
         }
 
-        $result = SharedContact::insert($newSharedContacts);
+        SharedContact::insert($newSharedContacts);
 
         return [
             "skipped" => $skipped,
